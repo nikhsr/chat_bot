@@ -1,24 +1,67 @@
 import discord
-from discord.ext.commands import Bot
-from discord.ext import commands
-import asyncio
-import time
-import os
+from wit import Wit
+import http.cookiejar
+import urllib.request
+import requests
+import bs4
 
-Client= discord.Client()
-client=commands.Bot(command_prefix=".")
-@client.event
-async def on_ready():
-    print("Thank you Have a nice day")
-    awaigt client.change_presence(game=discord.Game(name="content_recommender"))
+
+TOKEN = 'NTA4MzgzODIzODYwNTk2NzU2.Dr-dFQ.CxGCMFAdJyDkP66eM9JSKPBzX78'
+access_token = "G5X62DLGLJX6UNEWIBLYR57KMU6HUTJR"
+cli = Wit(access_token = access_token)
+
+client = discord.Client()
 
 @client.event
 async def on_message(message):
-    if message.content.startswith('.hello'):
-        msg='Hello(0.author.mention) How are you today'.format(message)
-        await client.send_message(message.channel,msg)
-    if message.content.startswith('.bye'):
-        msg='Goodbye(0.author.mention) hope to see you again:wave:'.format(message)
-        await client.send_message(message.channel,msg)
-client.run(os.getenv('Token')        
+    message_text=message.content.lower()
+    #await client.send_message(message.channel, message_text)
+    if message.author == client.user:
+        return
+
+    if message.content.startswith('!hello'):
+        msg = 'Hello {0.author.mention}'.format(message)
+        await client.send_message(message.channel, msg)
+
+    if message.content.startswith('show'):
+        resp= cli.message(message_text)
+        xx=resp['entities']['search_query'][0]['value']
+        cj = http.cookiejar.CookieJar()
+        opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+        urllib.request.install_opener(opener)
+        authentication_url = "https://m.facebook.com/login.php"
+        payload = {
+            'email': "8871076854",
+            'pass': "luvmahcupcake"
+        }
+        data = urllib.parse.urlencode(payload).encode('utf-8')
+        req = urllib.request.Request(authentication_url, data)
+        resp = urllib.request.urlopen(req)
+        contents = resp.read()
+
+        url = "https://m.facebook.com/search/str/"+str(xx)+"/keywords_blended_videos"
+
+        data = requests.get(url, cookies=cj)
+        soup = bs4.BeautifulSoup(data.text, 'html.parser')
+        for i in soup.prettify().split(" "):
+            if i.__contains__("video_"):
+                await client.send_message(message.channel,'https://m.facebook.com'+i[6:i.__len__()-1] )
+                
+        
     
+    
+    if "bye" in message.content.lower():
+        msg = 'Bye mate {0.author.mention}'.format(message)
+        await client.send_message(message.channel, msg)
+        await client.close()
+
+
+        
+@client.event
+async def on_ready():
+    print('Logged in as')
+    print(client.user.name)
+    print(client.user.id)
+    print('------')
+
+client.run(TOKEN)
