@@ -1,6 +1,6 @@
 discord.py
 wit
-http.cookiejar
-urllib.request
+cookiejar
+urllib
 requests
 bs4
