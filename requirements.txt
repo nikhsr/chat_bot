@@ -1,6 +1,6 @@
 discord.py
-wit.py
-http.cookiejar.py
-urllib.request.py
-requests.py
-bs4.py
+wit
+http.cookiejar
+urllib.request
+requests
+bs4
