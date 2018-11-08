@@ -1,1 +1,1 @@
-worker:python chatbot_python.py
+worker:python script.py
