@@ -1,6 +1,6 @@
-discord.py
-wit
-cookiejar
-urllib3
-requests
-bs4
+discord.py==0.16.12
+wit==5.1.0
+cookiejar==0.0.2
+urllib3==1.24.1
+requests==2.20.0
+beautifulsoup4==4.6.3
